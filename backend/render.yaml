@@ -12,18 +12,10 @@ services:
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: prod
-      - key: DB_HOST
+      - key: DB_URL
         fromDatabase:
           name: bookgram-db
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: bookgram-db
-          property: port
-      - key: DB_NAME
-        fromDatabase:
-          name: bookgram-db
-          property: database
+          property: connectionString
       - key: SPRING_DATASOURCE_USERNAME
         fromDatabase:
           name: bookgram-db

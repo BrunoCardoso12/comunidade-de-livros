@@ -15,7 +15,7 @@ services:
       - key: SPRING_DATASOURCE_URL
         fromDatabase:
           name: bookgram-db
-          property: connectionString
+          property: jdbcConnectionString
       - key: SPRING_DATASOURCE_USERNAME
         fromDatabase:
           name: bookgram-db

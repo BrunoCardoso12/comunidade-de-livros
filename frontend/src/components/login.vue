@@ -4,7 +4,7 @@
     <div class="text-h3 font-weight-bold mb-1" style="font-family: 'Georgia', serif; letter-spacing: -1px;">
       Bookgram
     </div>
-    <div class="text-caption text-medium-emphasis mb-8">A tua comunidade de leitores</div>
+    <div class="text-caption text-medium-emphasis mb-8">A sua comunidade de leitores</div>
 
     <!-- Card -->
     <v-card flat border rounded="xl" class="auth-card pa-6 w-100">

@@ -85,6 +85,11 @@ function formatTime(ts:any){ if(!ts) return ''; const d = new Date(ts); return d
 
 function pushNotification(n:any){
   n.read = n.read || false
+  // evita duplicar notificação que já foi carregada do servidor
+  if (notifications.value.some(x => x.id === n.id)) {
+    unreadCount.value = notifications.value.filter(x=>!x.read).length
+    return
+  }
   notifications.value.unshift(n)
   unreadCount.value = notifications.value.filter(x=>!x.read).length
 }
@@ -111,8 +116,8 @@ onMounted(()=>{
     const u = getLoggedUser()
     if (u?.id) {
       getNotificationsForUser(u.id).then(list => {
-        notifications.value = (list || [])
-        unreadCount.value = notifications.value.filter(x=>!x.read).length
+        notifications.value = (list || []).map((n: any) => ({ ...n, read: n.read ?? false }))
+        unreadCount.value = notifications.value.filter((x: any) => !x.read).length
       }).catch(e => console.warn('Could not load notifications', e))
     }
   } catch(e) {}

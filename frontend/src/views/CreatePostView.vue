@@ -74,15 +74,16 @@
 
       <v-text-field
         v-model="form.bookAuthor"
-        label="Autor"
+        label="Autor *"
         prepend-inner-icon="mdi-account-edit"
         variant="outlined"
+        :rules="[v => !!v || 'Obrigatório']"
         class="mb-2"
       />
 
       <v-textarea
         v-model="form.content"
-        label="A tua impressão sobre o livro *"
+        label="A sua impressão sobre o livro *"
         prepend-inner-icon="mdi-pencil"
         variant="outlined"
         rows="5"
@@ -196,16 +197,17 @@ async function searchGoogleBooks(query: string) {
   searching.value = true
   try {
     const res = await fetch(
-      `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=8&langRestrict=pt`
+      `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=8&lang=por`
     )
     const data = await res.json()
-    bookSuggestions.value = (data.items || []).map((item: any) => {
-      const info = item.volumeInfo
+    bookSuggestions.value = (data.docs || []).map((doc: any) => {
       return {
-        id: item.id,
-        title: info.title || 'Sem título',
-        authors: (info.authors || []).join(', '),
-        coverUrl: info.imageLinks?.thumbnail?.replace('http://', 'https://') || '',
+        id: doc.key || '',
+        title: doc.title || 'Sem título',
+        authors: (doc.author_name || []).join(', '),
+        coverUrl: doc.cover_i
+          ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`
+          : '',
       }
     })
   } catch (e) {

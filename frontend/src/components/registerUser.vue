@@ -4,7 +4,7 @@
     <div class="text-h4 font-weight-bold mb-1" style="font-family: 'Georgia', serif; letter-spacing: -1px;">
       Bookgram
     </div>
-    <div class="text-caption text-medium-emphasis mb-5">Cria a tua conta</div>
+    <div class="text-caption text-medium-emphasis mb-5">Cria a sua conta</div>
 
     <v-card flat border rounded="xl" class="reg-card pa-5 w-100">
 
@@ -22,30 +22,32 @@
 
       <v-text-field
         v-model="username"
-        label="Nome de utilizador"
+        label="Nome de utilizador *"
         variant="filled"
         rounded="lg"
         density="compact"
         hide-details
         class="mb-3"
+        :rules="[v => !!v || 'Obrigatório']"
         prepend-inner-icon="mdi-account-outline"
         autocomplete="username"
       />
       <v-text-field
         v-model="email"
-        label="Email"
+        label="Email *"
         type="email"
         variant="filled"
         rounded="lg"
         density="compact"
         hide-details
         class="mb-3"
+        :rules="[v => !!v || 'Obrigatório']"
         prepend-inner-icon="mdi-email-outline"
         autocomplete="email"
       />
       <v-text-field
         v-model="password"
-        label="Palavra-passe"
+        label="Palavra-passe *"
         :type="visible ? 'text' : 'password'"
         variant="filled"
         rounded="lg"
@@ -56,6 +58,7 @@
         :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
         @click:append-inner="visible = !visible"
         autocomplete="new-password"
+        :rules="[v => !!v || 'Obrigatório']"
       />
 
       <v-alert v-if="message" :type="alertType" density="compact" rounded="lg" class="mb-4 text-body-2">

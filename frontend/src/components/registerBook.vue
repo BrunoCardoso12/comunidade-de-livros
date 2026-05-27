@@ -149,23 +149,22 @@ async function handleSearch() {
   if (!query.value) return
   try {
     const { data } = await axios.get(
-      `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query.value)}`,
+      `https://openlibrary.org/search.json?q=${encodeURIComponent(query.value)}&limit=10`,
     )
 
     searchResults.value =
-      data.items?.map((item: any) => {
-        const volume = item.volumeInfo
+      data.docs?.map((doc: any) => {
         return {
-          title: volume.title || '',
-          author: volume.authors?.join(', ') || '',
-          year: volume.publishedDate?.split('-')[0] || '',
-          category: volume.categories?.join(', ') || '',
-          isbn: volume.industryIdentifiers?.[0]?.identifier || '',
+          title: doc.title || '',
+          author: doc.author_name?.join(', ') || '',
+          year: doc.first_publish_year || '',
+          category: doc.subject?.[0] || '',
+          isbn: doc.isbn?.[0] || '',
         }
       }) || []
   } catch (error) {
-    console.error('Erro ao buscar no Google Books:', error)
-    message.value = 'Error searching Google Books'
+    console.error('Erro ao buscar no Open Library:', error)
+    message.value = 'Error searching Open Library'
     alertType.value = 'error'
   }
 }
@@ -184,12 +183,11 @@ function selectBook(book: Book) {
 async function fetchBookImage(title: string) {
   try {
     const response = await axios.get(
-      `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(title)}`,
+      `https://openlibrary.org/search.json?title=${encodeURIComponent(title)}&limit=1&fields=cover_i`,
     )
-    const items = response.data.items
-    if (items && items.length > 0) {
-      const volumeInfo = items[0].volumeInfo
-      return volumeInfo.imageLinks?.thumbnail?.replace('http://', 'https://') || ''
+    const doc = response.data.docs?.[0]
+    if (doc?.cover_i) {
+      return `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`
     }
     return ''
   } catch (error) {

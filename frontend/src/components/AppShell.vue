@@ -51,8 +51,8 @@
       </v-btn>
 
       <v-btn value="profile" @click="$router.push('/profile')">
-        <v-avatar size="28" v-if="userAvatar">
-          <v-img :src="userAvatar" />
+        <v-avatar size="28" v-if="userAvatar && !avatarError">
+          <v-img :src="userAvatar" @error="avatarError = true" />
         </v-avatar>
         <v-icon size="26" v-else>mdi-account-circle{{ activeTab === 'profile' ? '' : '-outline' }}</v-icon>
       </v-btn>
@@ -61,12 +61,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { getLoggedUser } from '@/composable/auth'
 import { useTheme } from 'vuetify'
 import { getNotificationsForUser } from '@/services/apiNotifications'
 import { getMyActivities } from '@/services/apiActivities'
+
 
 const route = useRoute()
 const vuetifyTheme = useTheme()
@@ -90,7 +91,7 @@ const pendingCount = ref(0)
 
 const activeTab = ref('feed')
 watch(() => route.path, (path) => {
-  activeTab.value = routeToTab[path] ?? 'feed'
+  activeTab.value = routeToTab[path] ?? ''
   if (path === '/message') unreadCount.value = 0
 }, { immediate: true })
 
@@ -101,7 +102,8 @@ async function loadNotifications() {
   if (!u?.id) return
   try {
     const notifs = await getNotificationsForUser(u.id)
-    unreadCount.value = notifs.filter((n: any) => !n.readFlag).length
+    // conta apenas notificações do tipo 'message' não lidas para o badge de mensagens
+    unreadCount.value = notifs.filter((n: any) => !n.read && n.type === 'message').length
   } catch {}
   try {
     const acts = await getMyActivities(u.id)
@@ -115,14 +117,32 @@ onMounted(() => {
   setInterval(loadNotifications, 30000)
 })
 
-const user = computed(() => getLoggedUser())
+const avatarError = ref(false)
+
+// ref reativo ao invés de computed (localStorage não é reativo)
+const user = ref(getLoggedUser())
+
+function refreshUser() {
+  avatarError.value = false
+  user.value = getLoggedUser()
+}
+
 const userAvatar = computed(() => {
   const u = user.value
   if (!u?.avatarUrl) return null
   const url = String(u.avatarUrl).trim()
   if (url === 'null' || url === 'undefined' || url === '') return null
   if (/^https?:\/\//i.test(url)) return url
-  return url
+  const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/api\/?$/, '')
+  return apiBase + (url.startsWith('/') ? url : '/' + url)
+})
+
+onMounted(() => {
+  window.addEventListener('user-updated', refreshUser)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('user-updated', refreshUser)
 })
 </script>
 

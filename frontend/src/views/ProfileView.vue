@@ -103,7 +103,7 @@
       <!-- ── Grelha de posts ── -->
       <div v-if="posts.length === 0" class="text-center py-12 px-4">
         <v-icon size="56" color="grey-lighten-2">mdi-book-open-variant-outline</v-icon>
-        <div class="text-body-1 text-medium-emphasis mt-3">Ainda não publicaste nenhuma review</div>
+        <div class="text-body-1 text-medium-emphasis mt-3">Ainda não publicou nenhuma review</div>
         <v-btn color="primary" rounded="lg" class="mt-4" size="small" @click="$router.push('/create')">
           <v-icon start>mdi-plus</v-icon>Criar post
         </v-btn>

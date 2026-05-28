@@ -43,6 +43,5 @@ out/
 !.env.example
 src/main/resources/application-local.properties
 src/main/resources/application-secret.properties
-src/main/resources/application-prod.properties
 
 back

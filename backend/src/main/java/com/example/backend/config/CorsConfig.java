@@ -17,9 +17,15 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
+                // Build patterns: explicit origins + wildcard for all vercel.app subdomains
+                String[] origins = allowedOrigins.split(",");
+                String[] patterns = new String[origins.length + 1];
+                System.arraycopy(origins, 0, patterns, 0, origins.length);
+                patterns[origins.length] = "https://*.vercel.app";
+
                 registry.addMapping("/**")
-                        .allowedOrigins(allowedOrigins.split(","))
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedOriginPatterns(patterns)
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                         .allowedHeaders("*")
                         .allowCredentials(true);
             }
